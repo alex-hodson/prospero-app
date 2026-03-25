@@ -7,9 +7,17 @@ export default function App() {
   const [currentText, setCurrentText] = useState(null)
   const [tappedWord, setTappedWord] = useState(null)
   const [sessionMarks, setSessionMarks] = useState(0)
+  const [knownCountRefresh, setKnownCountRefresh] = useState(0)
+
+  const handleKnownWord = () => setKnownCountRefresh(k => k + 1)
 
   if (!currentText) {
-    return <TextInput onRead={setCurrentText} />
+    return (
+      <TextInput
+        onRead={setCurrentText}
+        knownCountRefresh={knownCountRefresh}
+      />
+    )
   }
 
   return (
@@ -18,6 +26,7 @@ export default function App() {
         text={currentText}
         sessionMarks={sessionMarks}
         onSessionMark={() => setSessionMarks(m => m + 1)}
+        knownCountRefresh={knownCountRefresh}
         onBack={() => { setCurrentText(null); setTappedWord(null) }}
         onWordTap={(word, refreshFn, currentState) => setTappedWord({ word, refreshFn, currentState })}
       />
@@ -26,6 +35,7 @@ export default function App() {
           word={tappedWord.word}
           currentState={tappedWord.currentState}
           onStateChange={tappedWord.refreshFn}
+          onKnownWord={handleKnownWord}
           onDismiss={() => setTappedWord(null)}
         />
       )}

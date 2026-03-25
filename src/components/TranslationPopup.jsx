@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { translate } from '../lib/deepl'
 import { setWordState } from '../lib/words'
 
-export default function TranslationPopup({ word, currentState, onStateChange, onDismiss }) {
+export default function TranslationPopup({ word, currentState, onStateChange, onDismiss, onKnownWord }) {
   const [translation, setTranslation] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -18,6 +18,7 @@ export default function TranslationPopup({ word, currentState, onStateChange, on
     setSaving(true)
     // Optimistic update first
     onStateChange(word, state)
+    if (state === 'known' && onKnownWord) onKnownWord()
     onDismiss()
     // Then persist (fire and forget — if it fails, the state will be wrong next session but UI is fine now)
     setWordState(word, state).catch(e => console.error('Failed to save word state:', e))

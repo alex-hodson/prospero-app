@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import WordCount from './WordCount'
 
-export default function TextInput({ onRead }) {
+export default function TextInput({ onRead, refreshTrigger = 0 }) {
   const [text, setText] = useState('')
 
   const handleSubmit = (e) => {
@@ -34,6 +35,9 @@ export default function TextInput({ onRead }) {
         <p className="mt-4 text-center text-stone-400 text-xs">
           Song lyrics, news articles, Reddit posts, literature
         </p>
+        <div className="mt-6">
+          <WordCount refreshTrigger={knownCountRefresh} />
+        </div>
       </div>
     </div>
   )

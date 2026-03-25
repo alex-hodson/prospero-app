@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { tokenize } from '../lib/tokenize'
 import { getWordStates } from '../lib/words'
+import WordCount from './WordCount'
 
-export default function Reader({ text, onBack, onWordTap, sessionMarks, onSessionMark }) {
+export default function Reader({ text, onBack, onWordTap, sessionMarks, onSessionMark, knownCountRefresh }) {
   const [tokens] = useState(() => tokenize(text))
   const [wordStates, setWordStates] = useState({})
   const [loadingStates, setLoadingStates] = useState(true)
@@ -32,9 +33,12 @@ export default function Reader({ text, onBack, onWordTap, sessionMarks, onSessio
       {/* Header */}
       <div className="sticky top-0 bg-amber-50 border-b border-stone-200 px-4 py-3 flex items-center justify-between">
         <button onClick={onBack} className="text-stone-500 text-sm font-medium py-2 pr-4">← Back</button>
-        <div className="flex items-center gap-2">
-          {loadingStates && <span className="text-xs text-stone-400">Loading...</span>}
-          {sessionMarks > 0 && !loadingStates && <span className="text-xs text-stone-400">{sessionMarks} marked this session</span>}
+        <div className="flex items-center gap-3">
+          <WordCount refreshTrigger={knownCountRefresh} />
+          <div className="flex items-center gap-2">
+            {loadingStates && <span className="text-xs text-stone-400">Loading...</span>}
+            {sessionMarks > 0 && !loadingStates && <span className="text-xs text-stone-400">{sessionMarks} marked</span>}
+          </div>
         </div>
       </div>
 
