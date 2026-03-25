@@ -6,6 +6,7 @@ import TranslationPopup from './components/TranslationPopup'
 export default function App() {
   const [currentText, setCurrentText] = useState(null)
   const [tappedWord, setTappedWord] = useState(null)
+  const [sessionMarks, setSessionMarks] = useState(0)
 
   if (!currentText) {
     return <TextInput onRead={setCurrentText} />
@@ -15,6 +16,8 @@ export default function App() {
     <>
       <Reader
         text={currentText}
+        sessionMarks={sessionMarks}
+        onSessionMark={() => setSessionMarks(m => m + 1)}
         onBack={() => { setCurrentText(null); setTappedWord(null) }}
         onWordTap={(word, refreshFn, currentState) => setTappedWord({ word, refreshFn, currentState })}
       />

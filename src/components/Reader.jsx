@@ -2,18 +2,21 @@ import { useEffect, useState } from 'react'
 import { tokenize } from '../lib/tokenize'
 import { getWordStates } from '../lib/words'
 
-export default function Reader({ text, onBack, onWordTap }) {
+export default function Reader({ text, onBack, onWordTap, sessionMarks, onSessionMark }) {
   const [tokens] = useState(() => tokenize(text))
   const [wordStates, setWordStates] = useState({})
+  const [loadingStates, setLoadingStates] = useState(true)
 
   useEffect(() => {
-    // Load word states from Supabase
-    getWordStates().then(setWordStates).catch(console.error)
+    getWordStates()
+      .then(states => { setWordStates(states); setLoadingStates(false) })
+      .catch(err => { console.error('Failed to load word states:', err); setLoadingStates(false) })
   }, [])
 
   // Called by parent when a word state changes
   const refreshWordState = (word, state) => {
     setWordStates(prev => ({ ...prev, [word.toLowerCase()]: state }))
+    if (onSessionMark) onSessionMark()
   }
 
   const getWordClass = (word) => {
@@ -29,7 +32,10 @@ export default function Reader({ text, onBack, onWordTap }) {
       {/* Header */}
       <div className="sticky top-0 bg-amber-50 border-b border-stone-200 px-4 py-3 flex items-center justify-between">
         <button onClick={onBack} className="text-stone-500 text-sm font-medium py-2 pr-4">← Back</button>
-        <span className="text-stone-400 text-xs">Tap a word to translate</span>
+        <div className="flex items-center gap-2">
+          {loadingStates && <span className="text-xs text-stone-400">Loading...</span>}
+          {sessionMarks > 0 && !loadingStates && <span className="text-xs text-stone-400">{sessionMarks} marked this session</span>}
+        </div>
       </div>
 
       {/* Text */}

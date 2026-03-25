@@ -16,14 +16,11 @@ export default function TranslationPopup({ word, currentState, onStateChange, on
 
   const handleMark = async (state) => {
     setSaving(true)
-    try {
-      await setWordState(word, state)
-      onStateChange(word, state)
-      onDismiss()
-    } catch (e) {
-      console.error(e)
-      setSaving(false)
-    }
+    // Optimistic update first
+    onStateChange(word, state)
+    onDismiss()
+    // Then persist (fire and forget — if it fails, the state will be wrong next session but UI is fine now)
+    setWordState(word, state).catch(e => console.error('Failed to save word state:', e))
   }
 
   return (
