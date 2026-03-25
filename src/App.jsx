@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import TextInput from './components/TextInput'
 import Reader from './components/Reader'
+import TranslationPopup from './components/TranslationPopup'
 
 export default function App() {
   const [currentText, setCurrentText] = useState(null)
-  const [tappedWord, setTappedWord] = useState(null) // { word, refreshFn, position }
+  const [tappedWord, setTappedWord] = useState(null)
 
   if (!currentText) {
     return <TextInput onRead={setCurrentText} />
@@ -14,16 +15,16 @@ export default function App() {
     <>
       <Reader
         text={currentText}
-        onBack={() => setCurrentText(null)}
-        onWordTap={(word, refreshFn) => setTappedWord({ word, refreshFn })}
+        onBack={() => { setCurrentText(null); setTappedWord(null) }}
+        onWordTap={(word, refreshFn, currentState) => setTappedWord({ word, refreshFn, currentState })}
       />
-      {/* Translation popup coming in T05 */}
       {tappedWord && (
-        <div className="fixed bottom-4 left-4 right-4 bg-white rounded-xl shadow-xl p-4 border border-stone-200">
-          <p className="text-stone-800 font-medium">{tappedWord.word}</p>
-          <p className="text-stone-400 text-sm">Translation coming in T05...</p>
-          <button onClick={() => setTappedWord(null)} className="mt-2 text-xs text-stone-400">Dismiss</button>
-        </div>
+        <TranslationPopup
+          word={tappedWord.word}
+          currentState={tappedWord.currentState}
+          onStateChange={tappedWord.refreshFn}
+          onDismiss={() => setTappedWord(null)}
+        />
       )}
     </>
   )
