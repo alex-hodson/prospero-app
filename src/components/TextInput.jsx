@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import WordCount from './WordCount'
 
-export default function TextInput({ onRead, refreshTrigger = 0 }) {
+export default function TextInput({ onRead, knownCountRefresh = 0 }) {
   const [text, setText] = useState('')
 
   const handleSubmit = (e) => {
@@ -21,13 +21,13 @@ export default function TextInput({ onRead, refreshTrigger = 0 }) {
             value={text}
             onChange={e => setText(e.target.value)}
             placeholder="Pega aquí texto en español..."
-            className="w-full h-48 p-4 rounded-xl border border-stone-200 bg-white text-stone-800 text-base resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 font-serif leading-relaxed shadow-sm"
+            className="w-full min-h-[12rem] p-4 rounded-xl border border-stone-200 bg-white text-stone-800 text-base resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 font-serif leading-relaxed shadow-sm"
             autoFocus
           />
           <button
             type="submit"
             disabled={!text.trim()}
-            className="mt-3 w-full py-3 rounded-xl bg-stone-800 text-amber-50 font-medium text-base disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-700 active:bg-stone-900 transition-colors"
+            className="mt-3 w-full py-4 rounded-xl bg-stone-800 text-amber-50 font-medium text-base disabled:opacity-40 disabled:cursor-not-allowed active:bg-stone-900 transition-colors"
           >
             Read →
           </button>

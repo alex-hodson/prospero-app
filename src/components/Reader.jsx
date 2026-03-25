@@ -44,14 +44,14 @@ export default function Reader({ text, onBack, onWordTap, sessionMarks, onSessio
 
       {/* Text */}
       <div className="px-4 py-6 max-w-2xl mx-auto">
-        <p className="text-stone-800 text-lg leading-relaxed font-serif">
+        <p className="text-stone-800 text-xl leading-relaxed font-serif">
           {tokens.map((token, i) => {
             if (token.type === 'space') return token.value
             if (token.type === 'punct') return <span key={i} className="text-stone-600">{token.value}</span>
             return (
               <span
                 key={i}
-                className={`transition-colors ${getWordClass(token.value)}`}
+                className={`transition-colors py-1 ${getWordClass(token.value)}`}
                 onClick={() => onWordTap(token.value, refreshWordState, wordStates[token.value.toLowerCase()])}
               >
                 {token.value}
