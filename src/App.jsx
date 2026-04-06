@@ -1,66 +1,71 @@
-import { useEffect, useState } from 'react'
-import { supabase } from './lib/supabase'
-import Auth from './components/Auth'
+import { useState } from 'react'
 import TextInput from './components/TextInput'
 import Reader from './components/Reader'
 import TranslationPopup from './components/TranslationPopup'
+import WordList from './components/WordList'
+import Library from './components/Library'
 
 export default function App() {
-  const [session, setSession] = useState(undefined) // undefined = loading
   const [currentText, setCurrentText] = useState(null)
   const [tappedWord, setTappedWord] = useState(null)
   const [sessionMarks, setSessionMarks] = useState(0)
   const [knownCountRefresh, setKnownCountRefresh] = useState(0)
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-    return () => subscription.unsubscribe()
-  }, [])
+  const [view, setView] = useState('home') // 'home' | 'reader' | 'words' | 'library'
 
   const handleKnownWord = () => setKnownCountRefresh(k => k + 1)
 
-  // Loading
-  if (session === undefined) {
-    return <div className="min-h-screen bg-amber-50 flex items-center justify-center">
-      <p className="text-stone-400 text-sm">Loading...</p>
-    </div>
+  const handleRead = (text) => {
+    setCurrentText(text)
+    setView('reader')
   }
 
-  // Not logged in
-  if (!session) return <Auth />
+  // Word list view
+  if (view === 'words') {
+    return <WordList onBack={() => setView('home')} />
+  }
 
-  // Logged in
-  if (!currentText) {
+  // Library view
+  if (view === 'library') {
     return (
-      <TextInput
-        onRead={setCurrentText}
-        knownCountRefresh={knownCountRefresh}
+      <Library
+        onBack={() => setView('home')}
+        onSelect={(text) => { handleRead(text.text) }}
       />
     )
   }
 
-  return (
-    <>
-      <Reader
-        text={currentText}
-        sessionMarks={sessionMarks}
-        onSessionMark={() => setSessionMarks(m => m + 1)}
-        knownCountRefresh={knownCountRefresh}
-        onBack={() => { setCurrentText(null); setTappedWord(null) }}
-        onWordTap={(word, refreshFn, currentState) => setTappedWord({ word, refreshFn, currentState })}
-      />
-      {tappedWord && (
-        <TranslationPopup
-          word={tappedWord.word}
-          currentState={tappedWord.currentState}
-          onStateChange={tappedWord.refreshFn}
-          onKnownWord={handleKnownWord}
-          onDismiss={() => setTappedWord(null)}
+  // Reader view
+  if (view === 'reader' && currentText) {
+    return (
+      <>
+        <Reader
+          text={currentText}
+          sessionMarks={sessionMarks}
+          onSessionMark={() => setSessionMarks(m => m + 1)}
+          knownCountRefresh={knownCountRefresh}
+          onBack={() => { setView('home'); setCurrentText(null); setTappedWord(null) }}
+          onWordTap={(word, refreshFn, currentState) => setTappedWord({ word, refreshFn, currentState })}
         />
-      )}
-    </>
+        {tappedWord && (
+          <TranslationPopup
+            word={tappedWord.word}
+            currentState={tappedWord.currentState}
+            onStateChange={tappedWord.refreshFn}
+            onKnownWord={handleKnownWord}
+            onDismiss={() => setTappedWord(null)}
+          />
+        )}
+      </>
+    )
+  }
+
+  // Home
+  return (
+    <TextInput
+      onRead={handleRead}
+      onShowWords={() => setView('words')}
+      onShowLibrary={() => setView('library')}
+      knownCountRefresh={knownCountRefresh}
+    />
   )
 }

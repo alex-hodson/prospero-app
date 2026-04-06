@@ -8,6 +8,9 @@ export default function TranslationPopup({ word, currentState, onStateChange, on
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
 
+  // Check if this is a phrase (contains spaces or is multiple words)
+  const isPhrase = word.includes(' ') || word.split(/\s+/).length > 1
+
   useEffect(() => {
     translate(word)
       .then(t => { setTranslation(t); setLoading(false) })
@@ -53,28 +56,30 @@ export default function TranslationPopup({ word, currentState, onStateChange, on
           {translation && <p className="text-stone-600 text-base">{translation}</p>}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex gap-3">
-          <button
-            onClick={() => handleMark('learning')}
-            disabled={saving}
-            className="flex-1 py-4 rounded-xl bg-yellow-100 text-yellow-800 font-medium text-base active:bg-yellow-200 disabled:opacity-50"
-          >
-            Learning
-          </button>
-          <button
-            onClick={() => handleMark('known')}
-            disabled={saving}
-            className="flex-1 py-4 rounded-xl bg-stone-800 text-amber-50 font-medium text-base active:bg-stone-900 disabled:opacity-50"
-          >
-            Known ✓
-          </button>
-        </div>
+        {/* Action buttons - only show for single words, not phrases */}
+        {!isPhrase && (
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleMark('learning')}
+              disabled={saving}
+              className="flex-1 py-4 rounded-xl bg-yellow-100 text-yellow-800 font-medium text-base active:bg-yellow-200 disabled:opacity-50"
+            >
+              Learning
+            </button>
+            <button
+              onClick={() => handleMark('known')}
+              disabled={saving}
+              className="flex-1 py-4 rounded-xl bg-stone-800 text-amber-50 font-medium text-base active:bg-stone-900 disabled:opacity-50"
+            >
+              Known ✓
+            </button>
+          </div>
+        )}
 
         {/* Dismiss */}
         <button
           onClick={onDismiss}
-          className="mt-3 w-full py-3 text-stone-400 text-sm active:text-stone-600"
+          className={`w-full py-3 text-stone-400 text-sm active:text-stone-600 ${isPhrase ? 'mt-5' : 'mt-3'}`}
         >
           Dismiss
         </button>

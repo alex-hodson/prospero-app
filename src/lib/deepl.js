@@ -1,18 +1,11 @@
-// Translate a single word/phrase from Spanish to English via DeepL free API
+// Translate a single word/phrase from Spanish to English via local proxy
 export async function translate(text) {
-  const apiKey = import.meta.env.VITE_DEEPL_API_KEY
-  // DeepL free API endpoint (note: free tier uses api-free.deepl.com)
-  const res = await fetch('https://api-free.deepl.com/v2/translate', {
+  const res = await fetch('/api/translate', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      auth_key: apiKey,
-      text,
-      source_lang: 'ES',
-      target_lang: 'EN'
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text })
   })
-  if (!res.ok) throw new Error('DeepL API error')
+  if (!res.ok) throw new Error('Translation error')
   const data = await res.json()
   return data.translations[0].text
 }
